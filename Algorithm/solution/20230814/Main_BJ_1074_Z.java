@@ -38,5 +38,5 @@ public class Main_BJ_1074_Z {
 		System.out.println(answer);
 
 	}
-//	https://ggasoon2.tistory.com/11
+
 }
