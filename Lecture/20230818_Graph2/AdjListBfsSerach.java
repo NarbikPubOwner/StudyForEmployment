@@ -20,8 +20,6 @@ class Node {
 	public String toString() {
 		return "Node [vertex=" + vertex + ", next=" + next + "]";
 	}
-	
-	
 }
 
 public class AdjListBfsSerach {
@@ -46,27 +44,6 @@ public class AdjListBfsSerach {
 				}
 			}
 		}
-		
-//		내가 짠 거 - 같은 코드
-//		boolean[] isVisited = new boolean[N];
-//		Queue<Integer> q = new ArrayDeque<Integer>();
-//		q.offer(0);
-//		isVisited[0] = true;
-//		while (q.size() != 0) {
-//			int t= q.poll();
-//			System.out.println(t);
-//			Node temp = AdjList[t];
-//			while (temp != null) {
-//				if (!isVisited[temp.vertex]) {
-//					q.offer(temp.vertex);
-//					isVisited[temp.vertex] = true;
-//					temp = temp.next;
-//				}
-//				else {
-//					temp = temp.next;
-//				}
-//			}
-//		}
 	}
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
