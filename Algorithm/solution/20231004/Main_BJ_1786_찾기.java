@@ -2,7 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main_BJ_1786_백준 {
+public class Main_BJ_1786_찾기 {
 	
 	static StringBuilder locationSB = new StringBuilder();//답들의 위치를 저장할 스트링빌더
 	//부분 일치 테이블 생성
