@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
-
+/*
+ * 사실상 편의점과의 길이가 짧아야 맥주가 동나지 않기 때문에, 최단거리를 찾는 문제와 동일하다 -> bfs
+ */
 public class Main_BJ_9205_맥주마시면서걸어가기 {
 	static String result;
 	static boolean isEnd;
