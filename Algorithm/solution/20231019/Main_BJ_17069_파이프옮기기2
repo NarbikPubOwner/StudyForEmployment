@@ -1,0 +1,58 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+/*
+ * 파이프가 우, 우하, 하로만 진행하기 때문에 2차원 배열 기준 ij,로 쭉 참조해서 dp를 진행하면 된다(그려보거나 잘 생각해보면 납득이 됩니다)
+ * 그리고 파이프가 놓아졌을때 가로 일직선, 대각선, 세로 일직선인 3가지 경우가 나오고 세가지 경우마다 진행방향이 달라지기 때문에 3차원배열로 dp를 구성해야한다
+ */
+public class Main {
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int N = Integer.parseInt(br.readLine());
+		int[][] orgArr = new int[N][N];
+		for (int i = 0; i < N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			for (int j = 0; j < N; j++) {
+				orgArr[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		long[][][] arr = new long[3][N][N];
+		if (orgArr[0][2] != 1) {
+			arr[0][0][2] = 1;
+		}
+		if (orgArr[1][2] != 1 && orgArr[0][2] != 1 && orgArr[1][1] != 1) {
+			arr[1][1][2] = 1;
+		}
+		
+		
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (i+1 < N) {
+					if (orgArr[i+1][j] != 1) {
+						arr[2][i+1][j] += arr[1][i][j];
+						arr[2][i+1][j] += arr[2][i][j];	
+					}
+				}
+				
+				if (i+1 < N && j+1 < N) {
+					if (orgArr[i+1][j+1] != 1 && orgArr[i+1][j] != 1 && orgArr[i][j+1] != 1) {
+						arr[1][i+1][j+1] += arr[0][i][j];
+						arr[1][i+1][j+1]+= arr[1][i][j];
+						arr[1][i+1][j+1]+= arr[2][i][j];	
+					}
+				}
+				
+				if (j+1  < N) {
+					if (orgArr[i][j+1] != 1) {
+						arr[0][i][j+1] += arr[0][i][j];
+						arr[0][i][j+1] += arr[1][i][j];
+					}
+				}
+			}
+		}
+		
+		System.out.println(arr[0][N-1][N-1]+arr[1][N-1][N-1]+arr[2][N-1][N-1]);
+	}
+}
