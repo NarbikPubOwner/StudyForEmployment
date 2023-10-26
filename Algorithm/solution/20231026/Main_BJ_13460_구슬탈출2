@@ -1,0 +1,123 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+/*
+ * R이 움직이지 않더라도 B가 움직이냐 마냐에 따라 뒤의 상황이 달라지기 때문에 R이 움직이지 않는 상황도 포함해야한다
+ * 그렇기 때문에 방문 배열을 R과 B 둘의 위치에 따라 처리해야한다.
+ */
+public class Main {
+	static class XY {
+		int x;
+		int y;
+		int c;
+		public XY(int x, int y, int c, XY prev) {
+			super();
+			this.x = x;
+			this.y = y;
+			this.c = c;
+		}
+	}
+	static int[] dx = new int[] {0,-1,0,1};
+	static int[] dy = new int[] {-1,0,1,0};
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		
+		st = new StringTokenizer(br.readLine()," ");
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		
+		char[][] arr = new char[N][M];
+		
+		boolean[][][][] visited = new boolean[N][M][N][M];
+		Queue<XY> Rq = new ArrayDeque<>();
+		Queue<XY> Bq = new ArrayDeque<>();
+		int[] end = new int[2];
+		for (int n = 0; n < N; n++) {
+			String s = br.readLine();
+			for (int m = 0; m < M; m++) {
+				arr[n][m] = s.charAt(m);
+				if (arr[n][m] == 'R') {
+					Rq.offer(new XY(n, m, 0, null));
+				}
+				else if(arr[n][m] == 'B') {
+					Bq.offer(new XY(n, m, 0, null));
+				}
+				else if (arr[n][m] == 'O') {
+					end[0] = n;
+					end[1] = m;
+				}
+			}
+		}
+		
+		int result = -1;
+		int limit  = 0;
+		while (!Rq.isEmpty() && limit < 10) {
+			XY R = Rq.poll();
+			XY B = Bq.poll();
+			
+			limit = Math.min(R.c, limit);
+			
+			if (R.c >= 10) continue;
+	
+			for (int i = 0; i < 4; i++) {
+				
+				int rnx = R.x;
+				int rny = R.y;
+				int bnx = B.x;
+				int bny = B.y;
+				
+				//R구현
+				while (true) {
+					if (arr[rnx+dx[i]][rny+dy[i]] == '#') break;
+					rnx += dx[i];
+					rny += dy[i];
+					if (arr[rnx][rny] == 'O') break;
+					
+				}
+				//B구현
+				while (true) {
+					if (arr[bnx+dx[i]][bny+dy[i]] == '#') break;
+					bnx += dx[i];
+					bny += dy[i];
+					if (arr[bnx][bny] == 'O') break;
+				}
+				
+				
+				if (arr[bnx][bny] == 'O') continue;
+				if (arr[rnx][rny] == 'O') {
+					result = R.c+1;
+					limit = 10;
+				}
+				
+				//같은 위치에 있는 경우 더 멀리있었던 구슬을 뒤로 되돌림
+				if (rnx == bnx && rny == bny) {
+					int rd = Math.abs(rnx - R.x) + Math.abs(rny - R.y);
+					int bd = Math.abs(bnx - B.x) + Math.abs(bny - B.y);
+					
+					if(rd > bd) {
+						rnx -= dx[i];
+						rny -= dy[i];
+					}
+					else if(bd > rd) {
+						bnx -= dx[i];
+						bny -= dy[i];
+					}
+				}
+				
+				if (visited[rnx][rny][bnx][bny]) continue;
+				
+				visited[rnx][rny][bnx][bny] = true;
+				Rq.offer(new XY(rnx, rny, R.c+1, null));
+				Bq.offer(new XY(bnx, bny, 0, null));
+			}
+		}
+		System.out.println(result);
+	}
+}
+
