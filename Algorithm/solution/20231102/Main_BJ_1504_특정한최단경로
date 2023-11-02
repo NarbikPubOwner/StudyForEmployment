@@ -1,0 +1,130 @@
+
+/*
+ * 거쳐야 하는 지점 v1, v2가 주어진다
+ * 이 경우 가능한 경우의 수는 2개이다, 시작 지점을 S, 끝 지점을 E, 거쳐야 하는 지점 2개를 V1,V2라고 한다면
+ * S->V1->V2->E OR S->V2->V1->E 이다.
+ * 그렇다면 S시작점의 다잌스트라 결과, V1시작점의 다잌스트라 결과, V2시작점의 다잌스트라 결과를 구하면 V1 OR V2를 거쳐가는 최종 최단 거리를 구할 수 있다.
+ * 여기서 문제는, 만약 중간에 거치는 결과 중 하나라도 INF, 즉 갈 수 없는 지점이라면 도달 불가능한 경우기 때문에 해당 경우에는 정답에 반영하지 않는다.
+ */
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main {
+	
+	/*
+	 * 다잌스트라 PQ에 사용
+	 */
+	static class edge implements Comparable<edge>{
+		int to;
+		int weight;
+		public edge(int to, int weight) {
+			super();
+			this.to = to;
+			this.weight = weight;
+		}
+		@Override
+		public int compareTo(edge o) {
+			return weight - o.weight;
+		}
+		
+	}
+	/*
+	 * 인접리스트 구현시 사용
+	 */
+	static class Node {
+		int vertex;
+		int weight;
+		Node next;
+		Node(int vertex, int weight, Node next) {
+			this.vertex = vertex;
+			this.weight = weight;
+			this.next = next;
+		}
+		@Override
+		public String toString() {
+			return "Node [vertex=" + vertex + ", weight=" + weight + ", next=" + next + "]";
+		}
+	}
+	static Node[] adjList;
+	/*
+	 * 기본적인 PQ이용 다잌스트라 구현
+	 */
+	public static void dijkstra(Node[] adjList, int[] distance, int start) {
+		Arrays.fill(distance, Integer.MAX_VALUE);
+		int N = adjList.length;
+		Queue<edge> pq = new PriorityQueue<>();
+		pq.offer(new edge(start, 0));
+		distance[start] = 0;
+		
+		while (!pq.isEmpty()) {
+			edge cur = pq.poll();
+			if (cur.weight > distance[cur.to]) continue;
+			for (Node node = adjList[cur.to]; node != null; node = node.next) {
+				int newWeight = cur.weight + node.weight;
+				if (distance[node.vertex] > newWeight) {
+					distance[node.vertex] = newWeight;
+					pq.offer(new edge(node.vertex, newWeight));
+				}
+			}
+		}
+		
+	}
+	
+	public static void main(String[] args) throws Exception{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		
+		adjList = new Node[N];
+		
+		for(int i=0; i < M; i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int start = Integer.parseInt(st.nextToken())-1;
+			int end = Integer.parseInt(st.nextToken())-1;
+			int weight = Integer.parseInt(st.nextToken());
+			
+			adjList[end] = new Node(start, weight, adjList[end]);
+			adjList[start] = new Node(end, weight, adjList[start]);
+		}
+		st = new StringTokenizer(br.readLine(), " ");
+		int v1 = Integer.parseInt(st.nextToken())-1;
+		int v2 = Integer.parseInt(st.nextToken())-1;
+		
+		int sToV1 = 0;
+		int sToV2 = 0;
+		int V1ToV2 = 0;
+		int V1ToE = 0;
+		int V2ToV1 = 0;
+		int V2ToE = 0;
+		
+		int[] distance = new int[N];
+		dijkstra(adjList, distance, 0);
+		sToV1 = distance[v1];
+		sToV2 = distance[v2];
+		
+		dijkstra(adjList, distance, v1);
+		V1ToE = distance[N-1];
+		V1ToV2 = distance[v2];
+		
+		dijkstra(adjList, distance, v2);
+		V2ToE = distance[N-1];
+		V2ToV1 = distance[v1];
+		
+		int result = Integer.MAX_VALUE;
+		if (sToV1 != Integer.MAX_VALUE && V1ToV2 != Integer.MAX_VALUE && V2ToE != Integer.MAX_VALUE) {
+			result = Math.min(result, sToV1 + V1ToV2 + V2ToE);
+		}
+		
+		if (sToV2 != Integer.MAX_VALUE && V2ToV1 != Integer.MAX_VALUE && V1ToE != Integer.MAX_VALUE) {
+			result = Math.min(result, sToV2 + V2ToV1 + V1ToE);
+		}
+		
+		if (result == Integer.MAX_VALUE) System.out.println(-1);
+		else System.out.println(result);
+	}
+}
